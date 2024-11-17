@@ -7,8 +7,9 @@ export default defineConfig({
     exclude: ["svelte-codemirror-editor", "codemirror", "@codemirror/lang-sql"],
   },
   plugins: [svelte()],
+  base: "./",
   build: {
-    outDir: '../docs',
+    outDir: './docs',
     emptyOutDir: true, // also necessary
   }
 })
