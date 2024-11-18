@@ -20,7 +20,9 @@
     } from "@codemirror/commands";
     import { keymap, highlightSpecialChars } from "@codemirror/view";
     import { lintKeymap } from "@codemirror/lint";
-    const { executeSQL } = $props();
+    import { dark } from "../assets/DarkTheme";
+    import { settings } from "../logic/Settings.svelte";
+    import SQLiteSvelte from "../logic/SQLite.svelte";
 
     let editorDiv;
     let view;
@@ -42,17 +44,45 @@
         });
     }
 
-    function enterPress(event) {
-        executeSQL();
+    settings.executeSQL = async (text = getText()) => {
+        if (text.trim().length == 0) return;
+        const result = await SQLiteSvelte.executeSQL(text);
+
+        settings.addLog({
+            input: text,
+            isError: result.error != undefined,
+            output: convertOutput(result),
+        });
+        setText("");
+        settings.saveLogs();
+    };
+
+    function convertOutput(result) {
+        let output = {};
+        if (result.output == undefined) {
+            output = result.error;
+        } else {
+            let array = result.output;
+            if (array.length > 0) {
+                if (array) output = array;
+            }
+        }
+        return output;
+    }
+
+    async function enterPress(event) {
+        await settings.executeSQL();
         return event;
     }
 
     function setSettings(autocomplete) {
         let basicSetup = [
+            dark,
             highlightSpecialChars(),
             history(),
             closeBrackets(),
             autocompletion(),
+            EditorView.lineWrapping,
             /*EditorView.updateListener.of((v) => {
                 if (v.docChanged) {
                     // Document changed
@@ -67,7 +97,7 @@
                 },
             }),*/
             keymap.of([
-                { key: "Shift-Enter", run: (event) => enterPress(event) },
+                { key: "Enter", run: (event) => enterPress(event) },
                 ...closeBracketsKeymap,
                 ...defaultKeymap,
                 ...historyKeymap,

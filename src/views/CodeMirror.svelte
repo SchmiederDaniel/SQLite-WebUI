@@ -8,6 +8,8 @@
         syntaxHighlighting,
     } from "@codemirror/language";
     import { highlightSpecialChars } from "@codemirror/view";
+    import { dark } from "../assets/DarkTheme";
+
     const { text } = $props();
     let editorDiv;
     let view;
@@ -31,9 +33,11 @@
 
     function setSettings(autocomplete) {
         let basicSetup = [
-            EditorState.readOnly.of(false),
+            EditorView.editable.of(false),
             highlightSpecialChars(),
             syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+            dark,
+            EditorView.lineWrapping,
         ];
         if (autocomplete) {
             basicSetup.push(

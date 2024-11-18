@@ -1,48 +1,15 @@
 <script>
-    import ArrowIcon from "../assets/ArrowIcon.svelte";
+    import ArrowIcon from "../assets/icons/ArrowIcon.svelte";
     import RunIcon from "../assets/icons/RunIcon.svelte";
     import InputField from "./InputField.svelte";
-    import SQLite from "../logic/SQLite.svelte";
     import { onMount } from "svelte";
     import { settings } from "../logic/Settings.svelte";
     import Codemirror from "./CodeMirror.svelte";
-
-    let inputField;
-    async function executeSQL() {
-        const text = inputField.getText();
-        if (text.trim().length == 0) return;
-        const result = await SQLite.executeSQL(text);
-        console.log(result);
-
-        settings.getLogs().unshift({
-            input: text,
-            isError: result.error != undefined,
-            output: convertOutput(result),
-        });
-        setText("");
-        settings.saveLogs();
-    }
-
-    function convertOutput(result) {
-        let output = "";
-        if (result.output == undefined) {
-            output = result.error;
-        } else {
-            let array = result.output;
-            if (array.length > 0) {
-                if (array) output = JSON.stringify(array);
-            }
-        }
-        return output;
-    }
+    import TableView from "./TableView.svelte";
 
     onMount(() => {
         settings.loadLogs();
     });
-
-    function setText(text) {
-        inputField.setText(text);
-    }
 </script>
 
 <main>
@@ -50,10 +17,10 @@
     <!--<CodeMirror bind:value lang={sql()} on:ready={(event) => onReady()} />-->
     <div class="input-border shadow">
         <div class="arrow"><ArrowIcon /></div>
-        <InputField bind:this={inputField} {executeSQL} />
+        <InputField />
         <button
             class="execute"
-            onclick={executeSQL}
+            onclick={settings.executeSQL()}
             aria-label="Execute SQL code"
             ><RunIcon />
         </button>
@@ -61,12 +28,13 @@
     <div>History:</div>
     <div class="logs">
         {#each settings.getLogs() as element}
-            <div class=" shadow">
-                <Codemirror text={element.input.toString()}/>
+            <div class="content shadow">
+                <Codemirror text={"" + element.input} />
                 {#if element.isError}
-                    <div class="error">{element.output}</div>
+                    <div class="error output">{element.output}</div>
                 {:else if element.output.length > 0}
-                    <div class="pass">{element.output}</div>
+                    <div class="output">{JSON.stringify(element.output)}</div>
+                    <TableView table={element.output[0]} />
                 {/if}
             </div>
         {/each}
@@ -74,6 +42,9 @@
 </main>
 
 <style>
+    .output {
+        padding: 4px;
+    }
     .error {
         color: red;
     }
@@ -87,6 +58,8 @@
         overflow: visible;
         overflow: auto;
         max-height: 100%;
+        display: flex;
+        flex-direction: column-reverse;
     }
 
     .logs > div {

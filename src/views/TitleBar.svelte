@@ -6,19 +6,33 @@
     import UndoIcon from "../assets/icons/UndoIcon.svelte";
     import RedoIcon from "../assets/icons/RedoIcon.svelte";
     import { settings } from "../logic/Settings.svelte.js";
+
+    function clearButtonClick() {
+        settings.clearTables();
+        settings.clearLogs();
+    }
+
+    async function exampleButtonClick() {
+        await settings.executeSQL(
+            "CREATE TABLE test (id INTEGER PRIMARY KEY, text VARCHAR(30));",
+        );
+        await settings.executeSQL(
+            "INSERT INTO test (text) VALUES ('Hello World :3');",
+        );
+        await settings.executeSQL(
+            "INSERT INTO test (text) VALUES ('Hey you OwO');",
+        );
+    }
 </script>
 
 <main>
     <div class="topBar">
-        <button
-            aria-label="Deletes database"
-            on:click={() => {
-                settings.clearAll();
-                settings.saveLogs();
-            }}>Clear<TrashIcon /></button
+        <button aria-label="Deletes database" on:click={clearButtonClick}
+            >Clear<TrashIcon /></button
         >
-        <button aria-label="Loads example database." class="disabled"
-            >Example<TemplateIcon /></button
+        <button
+            aria-label="Loads example database."
+            on:click={exampleButtonClick}>Example<TemplateIcon /></button
         >
         <div class="category">
             <button aria-label="Saves database as files." class="disabled">

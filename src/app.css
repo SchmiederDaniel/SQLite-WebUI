@@ -13,6 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   --input-color: rgb(53, 49, 79);
+  --component-color: #1a1a1a;
 }
 
 /* To change the background color of the autocompletion popup from Codemirror */
@@ -64,7 +65,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--component-color);
   cursor: pointer;
   transition: border-color 0.25s;
 }
