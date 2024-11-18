@@ -6,6 +6,7 @@
   let left;
   let dragBar;
   let isMouseDown = false;
+  let width = $state();
   const dragbarDown = (e) => {
     isMouseDown = true;
     document.body.addEventListener("pointermove", dragMove);
@@ -13,7 +14,7 @@
     e.preventDefault();
   };
   function dragMove(event) {
-    if (isMouseDown) {
+    if (isMouseDown && width > 600) {
       const offsetX = dragBar.clientWidth / 2 + 8 * 2; // 8px is padding on both sides of the site
       left.style.flexBasis = event.clientX - offsetX + "px";
     } else {
@@ -30,18 +31,14 @@
 <main style="height: 100%;">
   <div class="split-horizontal">
     <TitleBar />
-    <div class="split-vertical">
-      <div
-        bind:this={left}
-        style="flex-basis: 50%;"
-        class="padding side inner-shadow"
-      >
+    <div class="split-vertical" bind:clientWidth={width}>
+      <div bind:this={left} class="left padding side inner-shadow">
         <Tables />
       </div>
       <div
         bind:this={dragBar}
         class="dragBar"
-        on:pointerdown={(event) => dragbarDown(event)}
+        onpointerdown={(event) => dragbarDown(event)}
       ></div>
       <div class="padding side right inner-shadow">
         <Console />
@@ -62,26 +59,52 @@
     flex-grow: 1;
   }
 
+  @media (max-width: 600px) {
+    .dragBar {
+      height: 10px;
+      min-height: 10px;
+      width: auto;
+      border-top: 1px solid #646cff;
+      border-bottom: 1px solid #646cff;
+    }
+
+    .split-vertical {
+      flex-direction: column;
+      flex-basis: auto !important;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .dragBar {
+      height: 100%;
+      width: 10px;
+      min-width: 10px;
+
+      border-left: 1px solid #646cff;
+      border-right: 1px solid #646cff;
+      cursor: col-resize;
+    }
+
+    .dragBar:hover {
+      background-color: rgb(50, 60, 160);
+    }
+  }
+
+  .side {
+    min-width: auto;
+  }
+
+  .left {
+    flex-basis: 50%;
+  }
+
   .dragBar {
-    border-left: 1px solid #646cff;
-    border-right: 1px solid #646cff;
-    height: 100%;
-    width: 10px;
-    min-width: 6px;
-    cursor: col-resize;
     background-color: rgba(160, 160, 200, 0.08);
     transition: background-color 0.25s;
   }
 
-  .dragBar:hover {
-    background-color: rgb(50, 60, 160);
-  }
-
-  .side {
-    min-width: 150px;
-  }
-
   .right {
     flex-grow: 1;
+    flex-basis: 0;
   }
 </style>

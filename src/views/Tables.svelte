@@ -9,6 +9,7 @@
 
     settings.reloadTables = async () => {
         let newTable = [];
+        overview = null;
         const nameResult = (
             await sql.executeSQL(
                 "SELECT name FROM sqlite_master WHERE type='table';",
@@ -24,15 +25,24 @@
                 const tableInfo = (
                     await sql.executeSQL(`PRAGMA table_info(${tableName});`)
                 ).output[0];
+
+                let result = await sql.executeSQL(
+                    `SELECT * FROM ${tableName};`,
+                );
+                if (result.error) {
+                    console.log(
+                        "Error at creating TableViews: " +
+                            JSON.stringify(result.error),
+                    );
+                }
+                result = result.output[0];
+
                 const names = tableInfo.values.map((e) => e[1]);
                 const types = tableInfo.values.map((e) => e[2]);
                 const pks = tableInfo.values.map((e) => e[5]);
-
-                let result = (
-                    await sql.executeSQL(`SELECT * FROM ${tableName};`)
-                ).output[0];
                 if (!result) {
                     result = {
+                        // @ts-ignore... bad linter there is no typescript
                         values: [names.map((e) => null)],
                     };
                 }

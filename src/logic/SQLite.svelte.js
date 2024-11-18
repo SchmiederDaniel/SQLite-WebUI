@@ -20,8 +20,21 @@ settings.clearTables = async () => {
 };
 
 export default {
+    getSQL: () => {
+        initializeSQL();
+        return SQL;
+    },
+    setDatabase: (newDB) => {
+        initializeSQL();
+        db = newDB;
+    },
+    getDatabase: async () => {
+        if (!db)
+            await initializeSQL();
+        return db;
+    },
     executeSQL: async (text) => {
-        if(!db)
+        if (!db)
             await initializeSQL();
         try {
             return { output: db.exec(text) };

@@ -1,6 +1,6 @@
 <script>
     const { table, shadow = false } = $props();
-    console.log(table);
+    //console.log(table);
 </script>
 
 <main>
