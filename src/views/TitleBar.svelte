@@ -1,4 +1,5 @@
 <script>
+    // @ts-nocheck
     import TrashIcon from "../assets/icons/TrashIcon.svelte";
     import TemplateIcon from "../assets/icons/TemplateIcon.svelte";
     import SaveIcon from "../assets/icons/SaveIcon.svelte";
@@ -56,7 +57,7 @@
 </script>
 
 <main>
-    <div class="topBar">
+    <div class="topBar globalPadding">
         <button aria-label="Deletes database" on:click={clearButtonClick}
             >Clear<TrashIcon /></button
         >
@@ -96,17 +97,18 @@
     .category {
         background-color: rgba(160, 160, 200, 0.08);
         margin: 0.25em;
-        border-radius: 8px;
+        border-radius: var(--border-radius);
         border: 1px solid transparent;
         border-color: #ffffff4a;
     }
     .topBar {
-        border-bottom: 1px solid transparent;
-        border-color: #646cff;
+        /*border-bottom: 1px solid transparent;
+        border-color: var(--borderColor);*/
         display: flex;
-        padding: 0.25em 2px;
         align-items: center;
         flex-wrap: wrap;
+        padding-top: 0;
+        padding-bottom: 0;
     }
 
     .topBar button {

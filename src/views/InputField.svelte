@@ -1,4 +1,6 @@
 <script>
+    // @ts-nocheck
+
     import { onMount } from "svelte";
     import { EditorState } from "@codemirror/state";
     import { EditorView } from "codemirror";
@@ -48,7 +50,7 @@
         if (text.trim().length == 0) return;
         const result = await SQLiteSvelte.executeSQL(text);
 
-        settings.addLog({
+        await settings.addLog({
             input: text,
             isError: result.error != undefined,
             output: convertOutput(result),
@@ -98,11 +100,11 @@
             }),*/
             keymap.of([
                 { key: "Enter", run: (event) => enterPress(event) },
-                ...closeBracketsKeymap,
-                ...defaultKeymap,
-                ...historyKeymap,
-                ...completionKeymap,
-                ...lintKeymap,
+                closeBracketsKeymap,
+                defaultKeymap,
+                historyKeymap,
+                completionKeymap,
+                lintKeymap,
             ]),
             syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
         ];
@@ -142,7 +144,6 @@
     .input-box {
         padding: 2px;
         border: none;
-        width: auto;
         width: 100%;
         background-color: var(--input-color);
     }

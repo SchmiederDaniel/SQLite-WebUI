@@ -3,7 +3,7 @@
     //console.log(table);
 </script>
 
-<main>
+<main class="globalPadding">
     <div class={(shadow ? "shadow" : "") + " border"}>
         {#if table.name}
             <div class="tableName">{table.name}</div>
@@ -50,8 +50,20 @@
         --border-color: rgb(113, 113, 113);
     }
 
-    .shadow {
-        border: 1px solid #646cff;
+    table tr:last-child td:first-child {
+        border-bottom-left-radius: var(--border-radius);
+    }
+
+    table tr:last-child td:last-child {
+        border-bottom-right-radius: var(--border-radius);
+    }
+
+    table tr:first-child th:first-child {
+        border-top-left-radius: var(--border-radius);
+    }
+
+    table tr:first-child th:last-child {
+        border-top-right-radius: var(--border-radius);
     }
 
     .type,
@@ -71,12 +83,14 @@
         font-weight: bold;
     }
     .border {
-        border-radius: 8px;
+        border-radius: var(--border-radius);
         width: fit-content;
+        background-color: var(--background-color);
     }
 
     main {
-        padding: 4px;
+        width: fit-content;
+        height: fit-content;
     }
 
     .table-contianer {
@@ -92,7 +106,7 @@
         /*
         border-collapse: collapse;
         */
-        border-radius: 8px;
+        border-radius: var(--border-radius);
     }
 
     tbody tr {
@@ -111,6 +125,6 @@
     }
 
     td:nth-child(even) {
-        background-color: color-mix(in srgb, var(--component-color) 80%, white);
+        background-color: color-mix(in srgb, var(--background-color) 80%, white);
     }
 </style>

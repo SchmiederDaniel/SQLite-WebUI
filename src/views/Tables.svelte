@@ -1,4 +1,5 @@
 <script>
+    // @ts-nocheck
     import { onMount } from "svelte";
     import { settings } from "../logic/Settings.svelte";
     import TableView from "./TableView.svelte";
@@ -65,18 +66,34 @@
 </script>
 
 <main>
-    <div>Tables:</div>
-    <div class="tables">
-        {#if overview}
-            <TableView table={overview} shadow={true} />
-        {/if}
-        {#each tables as table}
-            <TableView {table} shadow={true} />
-        {/each}
+    <div class="globalPadding">Tables:</div>
+    <div class="scrollDiv inner-shadow">
+        <div class="tables">
+            {#if overview}
+                <TableView table={overview} shadow={true} />
+            {/if}
+            {#each tables as table}
+                <TableView {table} shadow={true} />
+            {/each}
+        </div>
     </div>
 </main>
 
 <style>
+    .scrollDiv {
+        flex-grow: 1;
+        max-height: 100%;
+        overflow-y: auto;
+    }
+    main {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
     .tables {
         display: flex;
         flex-wrap: wrap;

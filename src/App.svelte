@@ -15,7 +15,7 @@
   };
   function dragMove(event) {
     if (isMouseDown && width > 600) {
-      const offsetX = dragBar.clientWidth / 2 + 8 * 2; // 8px is padding on both sides of the site
+      const offsetX = dragBar.clientWidth / 2; // 8px is padding on both sides of the site
       left.style.flexBasis = event.clientX - offsetX + "px";
     } else {
       dragEnd();
@@ -28,19 +28,19 @@
   };
 </script>
 
-<main style="height: 100%;">
+<main>
   <div class="split-horizontal">
     <TitleBar />
     <div class="split-vertical" bind:clientWidth={width}>
-      <div bind:this={left} class="left padding side inner-shadow">
+      <div bind:this={left} class="left side inner-shadow">
         <Tables />
       </div>
       <div
         bind:this={dragBar}
         class="dragBar"
-        onpointerdown={(event) => dragbarDown(event)}
+        on:pointerdown={(event) => dragbarDown(event)}
       ></div>
-      <div class="padding side right inner-shadow">
+      <div class="side right inner-shadow">
         <Console />
       </div>
     </div>
@@ -48,15 +48,9 @@
 </main>
 
 <style>
-  .split-horizontal {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
   .split-vertical {
     display: flex;
-    flex-grow: 1;
+    height: 100%;
   }
 
   @media (max-width: 600px) {
@@ -75,32 +69,52 @@
   }
 
   @media (min-width: 600px) {
+    .split-horizontal {
+      overflow: hidden;
+      height: 100%;
+    }
+
     .dragBar {
       height: 100%;
-      width: 10px;
-      min-width: 10px;
+      width: 14px;
+      min-width: 14px;
 
-      border-left: 1px solid #646cff;
-      border-right: 1px solid #646cff;
+      border-left: 1px solid;
+      border-right: 1px solid;
       cursor: col-resize;
     }
 
     .dragBar:hover {
-      background-color: rgb(50, 60, 160);
+      background-color: rgb(40, 40, 40);
+      box-shadow: 0 0 20px black;
+      border-color: #646cff;
+    }
+
+    .left {
+      flex-basis: 50%;
     }
   }
 
   .side {
+    background-color: color-mix(
+      in srgb,
+      var(--background-color) 60%,
+      rgb(223, 228, 255)
+    );
     min-width: auto;
   }
 
-  .left {
-    flex-basis: 50%;
+  main {
+    width: 100%;
+    height: 100%;
   }
 
   .dragBar {
-    background-color: rgba(160, 160, 200, 0.08);
-    transition: background-color 0.25s;
+    background-color: var(--component-color);
+    transition:
+      background-color 0.25s,
+      border-color 0.25s;
+    border-color: var(--borderColor);
   }
 
   .right {
