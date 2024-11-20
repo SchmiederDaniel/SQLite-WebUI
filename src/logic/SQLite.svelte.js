@@ -11,35 +11,43 @@ async function initializeSQL() {
         // Loading wasm file
         locateFile: (file) => wasmUrl
     });
-    db = new SQL.Database();
+    if (!db) {
+        db = new SQL.Database();
+    }
 }
 
-settings.clearTables = async () => {
-    db = new SQL.Database();
-    await settings.reloadTables();
-};
+// TODO: Either use the settings object or use export. But using both is a dirty solution.
 
 export default {
-    getSQL: () => {
-        initializeSQL();
-        return SQL;
+    clearTables: async () => {
+        db.close();
+        db = new SQL.Database();
+        await settings.reloadTables();
     },
-    setDatabase: (newDB) => {
+    setDatabase: (newDB) => { // TODO: should this be async?
+        db.close();
         initializeSQL();
         db = newDB;
     },
+    getSQL: async () => {
+        await initializeSQL();
+        return SQL;
+    },
     getDatabase: async () => {
-        if (!db)
-            await initializeSQL();
+        await initializeSQL();
         return db;
     },
     executeSQL: async (text) => {
-        if (!db)
-            await initializeSQL();
+        await initializeSQL();
         try {
             return { output: db.exec(text) };
         } catch (error) {
-            return { error: error.message };
+            return { error: error };
         }
+    },
+    copyDatabase: async () => {
+        await initializeSQL();
+        const copy = db.export();
+        return copy;
     }
 }

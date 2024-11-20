@@ -36,7 +36,7 @@
     /**
      * @param {string} text
      */
-    export function setText(text) {
+    settings.setText = (text) => {
         view.dispatch({
             changes: {
                 from: 0,
@@ -44,7 +44,7 @@
                 insert: text,
             },
         });
-    }
+    };
 
     settings.executeSQL = async (text = getText()) => {
         if (text.trim().length == 0) return;
@@ -55,7 +55,7 @@
             isError: result.error != undefined,
             output: convertOutput(result),
         });
-        setText("");
+        settings.setText("");
         settings.saveLogs();
     };
 
@@ -141,6 +141,12 @@
 </main>
 
 <style>
+    main {
+        display: flex;
+        align-items: center;
+        background-color: var(--input-color);
+    }
+
     .input-box {
         padding: 2px;
         border: none;

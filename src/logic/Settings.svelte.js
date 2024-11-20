@@ -1,31 +1,22 @@
+import SQLiteSvelte from "./SQLite.svelte";
+
 let autoComplete = true;
-const logs = $state([]);
-async function clear() {
-    logs.splice(0, logs.length);
-    await settings.reloadTables();
-}
 
 export const settings = {
-    addLog: async (log) => {
-        logs.push(log);
-        await settings.reloadTables();
-    },
-    getLogs: () => logs,
+    tableLimit: 9999, // Limit for how many rows will be shown per table
     getAutoComplete: () => autoComplete,
-    saveLogs: () => {
-        localStorage.setItem("logs", JSON.stringify(logs));
-    },
-    clearLogs: () => {
-        clear();
-        settings.saveLogs();
-    },
-    loadLogs: () => {
-        clear();
-        const text = localStorage.getItem("logs");
-        if (text && text != "undefined") {
-            for (const obj of JSON.parse(text)) {
-                logs.push(obj);
-            }
+    loadDatabaseFile: async (file) => {
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const array = new Uint8Array(arrayBuffer);
+            const SQL = await SQLiteSvelte.getSQL();
+            const db = new SQL.Database(array);
+            SQLiteSvelte.setDatabase(db);
+            await settings.reloadTables();
+            settings.showPopup("Loaded database successfuly!");
+        } catch (err) {
+            settings.showPopup("Couldn't load database file.", true);
+            console.error(err);
         }
     },
 };

@@ -84,7 +84,6 @@
     }
     .border {
         border-radius: var(--border-radius);
-        width: fit-content;
         background-color: var(--background-color);
     }
 
@@ -95,8 +94,8 @@
 
     .table-contianer {
         overflow: auto;
-        max-width: 100%;
-        max-height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     table {
@@ -125,6 +124,13 @@
     }
 
     td:nth-child(even) {
-        background-color: color-mix(in srgb, var(--background-color) 80%, white);
+        background-color: color-mix(
+            in srgb,
+            var(--background-color) 80%,
+            white
+        );
+    }
+
+    td {
     }
 </style>
