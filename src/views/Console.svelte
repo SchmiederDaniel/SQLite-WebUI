@@ -13,7 +13,7 @@
 
     const logs = $state([]);
     let undoList = [];
-    let redoList = [];
+    let currentIndex;
 
     async function clear() {
         logs.splice(0, logs.length);
@@ -21,22 +21,26 @@
     }
 
     settings.addLog = async (log) => {
-        const dbArray = await SQLiteSvelte.copyDatabase();
-
         logs.push(log);
-        undoList.push(arrayToHex(dbArray));
+        if(!log.isError) {
+            const dbArray = await SQLiteSvelte.copyDatabase();
+            undoList.splice(currentIndex + 1, undoList.length);
+            currentIndex = undoList.length;
+            undoList.push(arrayToHex(dbArray));
+        }
         await settings.reloadTables();
     };
 
     settings.saveLogs = () => {
         localStorage.setItem("undoList", JSON.stringify(undoList));
+        localStorage.setItem("currenIndex", JSON.stringify(currentIndex));
         localStorage.setItem("logs", JSON.stringify(logs));
     };
 
     settings.clearLogs = () => {
         clear();
         undoList = [];
-        redoList = [];
+        currentIndex = 0;
         settings.saveLogs();
     };
 
@@ -48,16 +52,38 @@
                 logs.push(obj);
             }
         }
+
+        const indexJson = localStorage.getItem("currenIndex");
+        if (indexJson) {
+            currentIndex = JSON.parse(indexJson);
+        } else {
+            currentIndex = 0;
+        }
+
         const json = localStorage.getItem("undoList");
         if (json) {
             undoList = JSON.parse(json);
-            if (undoList.length > 0) {
-                const last = undoList[undoList.length - 1];
-                const array = hexToArray(last);
-                await setDatabaseByArray(array);
-            }
+            await reloadDatabase();
         }
     };
+
+    async function reloadDatabase() {
+        if (undoList.length > 0) {
+            const last = undoList[currentIndex];
+            const array = hexToArray(last);
+            await setDatabaseByArray(array);
+        }
+    }
+
+    async function undoButtonClick() {
+        currentIndex = Math.max(currentIndex - 1, 0);
+        await reloadDatabase();
+    }
+
+    async function redoButtonClick() {
+        currentIndex = Math.min(currentIndex + 1, undoList.length - 1);
+        await reloadDatabase();
+    }
 
     function arrayToHex(decimalArray) {
         const hexArray = [];
@@ -97,24 +123,6 @@
         const db = new SQL.Database(array);
         SQLiteSvelte.setDatabase(db);
         await settings.reloadTables();
-    }
-
-    async function undoButtonClick() {
-        const hex = undoList.pop();
-        redoList.push(hex);
-        if (hex != undefined) {
-            const array = hexToArray(hex);
-            await setDatabaseByArray(array);
-        }
-    }
-
-    async function redoButtonClick() {
-        const hex = redoList.pop();
-        undoList.push(hex);
-        if (hex != undefined) {
-            const array = hexToArray(hex);
-            await setDatabaseByArray(array);
-        }
     }
 
     onMount(() => {
